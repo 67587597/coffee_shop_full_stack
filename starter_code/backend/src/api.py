@@ -1,3 +1,5 @@
+import requests
+import sys
 import os
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
@@ -38,7 +40,7 @@ def get_drinks():
         return jsonify({"success": True,
                         "drinks": drink_list
                         }), 200
-    except:
+    except requests.exceptions.HTTPError:
         abort(500)
 
 '''
@@ -61,7 +63,7 @@ def get_drink_detail():
         return jsonify({"success": True,
                         "drinks": drink_list
                         }), 200
-    except:
+    except requests.exceptions.HTTPError:
         abort(500)
 
 '''
@@ -103,7 +105,7 @@ def add_drink():
         return jsonify({"success": True,
                         "drinks": drink_list
                         }), 200
-    except EOFError:
+    except requests.exceptions.HTTPError:
         abort(500)
 
 
@@ -148,7 +150,7 @@ def edit_drink(id):
         return jsonify({"success": True,
                         "drinks": drink_list
                         }), 200
-    except EOFError:
+    except requests.exceptions.HTTPError:
         abort(500)
 
 
@@ -177,7 +179,7 @@ def delete_drink(id):
         return jsonify({"success": True,
                         "delete": id
                         }), 200
-    except:
+    except requests.exceptions.HTTPError:
         abort(500)
 
 
