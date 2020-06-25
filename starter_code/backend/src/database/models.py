@@ -48,7 +48,9 @@ class Drink(db.Model):
     '''
     def short(self):
         print(json.loads(self.recipe))
-        short_recipe = [{'color': r['color'], 'parts': r['parts']} for r in json.loads(self.recipe)]
+        recipe = json.loads(self.recipe)
+        # short_recipe = [{'color': r['color'], 'parts': r['parts']} for r in json.loads(self.recipe)]
+        short_recipe = [{'color': recipe['color'], 'parts': recipe['parts']}]
         return {
             'id': self.id,
             'title': self.title,
@@ -78,6 +80,7 @@ class Drink(db.Model):
     def insert(self):
         db.session.add(self)
         db.session.commit()
+        
 
     '''
     delete()

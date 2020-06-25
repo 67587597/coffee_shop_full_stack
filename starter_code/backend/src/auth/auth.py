@@ -36,7 +36,7 @@ def get_token_auth_header():
                         'description': 'authorization is missing'
                         }, 401)
     
-    auth_header = request.headers['authorization'].split('')
+    auth_header = request.headers['authorization'].split()
 
     if auth_header[0].lower() != 'bearer' or len(auth_header) != 2:
             raise AuthError({
@@ -59,12 +59,12 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    if 'permission' not in payload:
+    if 'permissions' not in payload:
          raise AuthError({
             'code': 'invalid_header',
-            'description': 'authorization header must be bearer token'
+            'description': 'Unable to find the appropriate key'
             }, 401)
-    if permission not in payload['permission']:
+    if permission not in payload['permissions']:
          raise AuthError({
             'code': 'unautorized',
             'description': 'the access is not granted'
@@ -100,26 +100,31 @@ def verify_decode_jwt(token):
             'description': 'Invalid header'
             }, 401)
     rsa_key = {}
+
     # if puplic kid is matched the recieved kid, form the structure of the payload
-    if jwks['Keys']['kid'] == header_to_verify['kid']:
-        rsa_key = {
-            'kty': jwks['Keys']['kty'],
-            'kid': jwks['Keys']['kid'],
-            'use': jwks['Keys']['use'],
-            'n': jwks['Keys']['n'],
-            'e': jwks['Keys']['e']
-        }
+    for key in jwks['keys']:
+        if key['kid'] == header_to_verify['kid']:
+            rsa_key = {
+                'kty': key['kty'],
+                'kid': key['kid'],
+                'use': key['use'],
+                'n': key['n'],
+                'e': key['e']
+            }
     
+
     if rsa_key:
+
         try:
             # decode the token, and raise error if it is not valid
+            # print(token,rsa_key,ALGORITHMS, API_AUDIENCE)
             payload = jwt.decode(
                 token,
                 rsa_key,
                 algorithms=ALGORITHMS,
                 audience=API_AUDIENCE,
                 issuer='https://' + AUTH0_DOMAIN + '/'
-            )
+            )           
             return payload
 
         except jwt.ExpiredSignatureError:
@@ -164,7 +169,8 @@ def requires_auth(permission=''):
                 }, 401)
 
             check_permissions(permission, payload)
-            return f(payload, *args, **kwargs)
+
+            return f(*args, **kwargs)
 
         return wrapper
     return requires_auth_decorator
