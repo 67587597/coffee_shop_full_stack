@@ -43,6 +43,7 @@ def get_drinks():
     except requests.exceptions.HTTPError:
         abort(500)
 
+
 '''
 @TODO implement endpoint
     GET /drinks-detail
@@ -65,6 +66,7 @@ def get_drink_detail():
                         }), 200
     except requests.exceptions.HTTPError:
         abort(500)
+
 
 '''
 @TODO implement endpoint
@@ -93,7 +95,7 @@ def add_drink():
         try:
             drink = Drink(title=title, recipe=json.dumps(recipe))
             drink.insert()
-        except:
+        except requests.exceptions.HTTPError:
             abort(422)
 
         print('inserted')
@@ -197,6 +199,7 @@ def unprocessable(error):
                     "message": "unprocessable"
                     }), 422
 
+
 '''
 @TODO implement error handlers using the @app.errorhandler(error) decorator
     each error handler should return (with approprate messages):
@@ -221,6 +224,7 @@ def not_found(error):
         "error": 404,
         "message": "resource not found"
     }), 404
+
 
 '''
 @TODO implement error handler for AuthError
